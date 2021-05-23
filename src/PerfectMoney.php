@@ -1,6 +1,6 @@
 <?php
 
-namespace charlesassets\LaravelPerfectMoney;
+namespace Oasin\PerfectMoney;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;

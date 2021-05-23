@@ -1,6 +1,6 @@
 <?php
 
-namespace oasin\PerfectMoney;
+namespace Oasin\PerfectMoney;
 
 use Illuminate\Support\ServiceProvider;
 

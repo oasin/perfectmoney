@@ -23,12 +23,12 @@
     },
     "autoload": {
         "psr-4": {
-            "oasin\\PerfectMoney\\": "src"
+            "Oasin\\PerfectMoney\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "oasin\\PerfectMoney\\": "tests"
+            "Oasin\\PerfectMoney\\": "tests"
         }
     },
     "scripts": {
@@ -42,7 +42,7 @@
         },
         "laravel": {
           "providers": [
-            "oasin\\PerfectMoney\\PerfectMoneyServiceProvider"
+            "Oasin\\PerfectMoney\\PerfectMoneyServiceProvider"
           ]
         }
     },
