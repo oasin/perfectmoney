@@ -1,12 +1,12 @@
 <?php
 
-namespace Selfreliance\PerfectMoney;
+namespace Oasin\PerfectMoney;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Validation\ValidatesRequests;
-use Selfreliance\PerfectMoney\Exceptions\PerfectMoneyException;
-use Selfreliance\PerfectMoney\Events\PerfectMoneyPaymentIncome;
-use Selfreliance\PerfectMoney\Events\PerfectMoneyPaymentCancel;
+use Oasin\PerfectMoney\Exceptions\PerfectMoneyException;
+use Oasin\PerfectMoney\Events\PerfectMoneyPaymentIncome;
+use Oasin\PerfectMoney\Events\PerfectMoneyPaymentCancel;
 
 class PerfectMoney implements  PerfectMoneyInterface
 {
@@ -34,7 +34,7 @@ class PerfectMoney implements  PerfectMoneyInterface
      * @param mixed $value Parameter value
      * @return $this
      */
-    public function setParameter(string $key, $value = null)
+    public function setParameter( $key, $value = null)
     {
         $this->$key = $value;
         return $this;
@@ -57,7 +57,7 @@ class PerfectMoney implements  PerfectMoneyInterface
      * @param string $value
      * @return PerfectMoney
      */
-    public function setAccount(string $value)
+    public function setAccount($value)
     {
         return $this->setParameter('account', $value);
     }
@@ -231,7 +231,7 @@ class PerfectMoney implements  PerfectMoneyInterface
             throw new PerfectMoneyException("Need amount for transaction");
         }
 
-        if ($post_data['PAYEE_ACCOUNT'] != config('perfectmoney.payee_account')) {
+        if ($post_data['PAYEE_ACCOUNT'] != $this->account ?? config('perfectmoney.payee_account')) {
             throw new PerfectMoneyException("Payeer dont admin account");
         }
 
@@ -242,8 +242,9 @@ class PerfectMoney implements  PerfectMoneyInterface
         $TIMESTAMPGMT = $post_data['TIMESTAMPGMT'];
         $V2_HASH = $post_data['V2_HASH'];
         $PAYEE_ACCOUNT = $post_data['PAYEE_ACCOUNT'];
+        $alt_pass = $this->passphrase ?? config('perfectmoney.alt');
 
-        $sign = @$PAYMENT_ID . ":" . config('perfectmoney.payee_account') . ":" . @$PAYMENT_AMOUNT . ":USD:" . @$PAYMENT_BATCH_NUM . ":" . @$PAYER_ACCOUNT . ":" . strtoupper(md5(config('perfectmoney.alt'))) . ":" . @$TIMESTAMPGMT;
+        $sign = @$PAYMENT_ID . ":" . $this->account ?? config('perfectmoney.payee_account') . ":" . @$PAYMENT_AMOUNT . ":USD:" . @$PAYMENT_BATCH_NUM . ":" . @$PAYER_ACCOUNT . ":" . strtoupper(md5($alt_pass)) . ":" . @$TIMESTAMPGMT;
         $sign = strtoupper(md5($sign));
 
         if ($sign !== $V2_HASH) {
@@ -261,11 +262,7 @@ class PerfectMoney implements  PerfectMoneyInterface
      */
     function check_transaction(array $request, array $server, $headers = [])
     {
-        MerchantPosts::create([
-            'type' => 'PerfectMoney',
-            'ip' => real_ip(),
-            'post_data' => $request
-        ]);
+       
         $textReponce = [
             'status' => 'success'
         ];
@@ -283,11 +280,9 @@ class PerfectMoney implements  PerfectMoneyInterface
                 return \Response::json($textReponce, "200");
             }
         } catch (PerfectMoneyException $e) {
-            MerchantPosts::create([
-                'type' => 'PerfectMoney_Error',
-                'ip' => real_ip(),
-                'post_data' => ['request' => $request, 'message' => $e->getMessage()],
-            ]);
+            //log IPN error 
+
+            // $e->getMessage();
         }
         return \Response::json($textReponce, "200");
     }
@@ -307,13 +302,13 @@ class PerfectMoney implements  PerfectMoneyInterface
         $client = new \GuzzleHttp\Client();
         $res = $client->request('GET', 'https://perfectmoney.is/acct/confirm.asp', [
             'query' => [
-                'AccountID' => config('perfectmoney.account_id'),
-                'PassPhrase' => config('perfectmoney.account_pass'),
-                'Payer_Account' => config('perfectmoney.payee_account'),
+                'AccountID' => $this->accountID ?? config('perfectmoney.account_id'),
+                'PassPhrase' => $this->password ?? config('perfectmoney.account_pass'),
+                'Payer_Account' => $this->account ?? config('perfectmoney.payee_account'),
                 'Payee_Account' => strtoupper(trim($address)),
                 'Amount' => $amount,
                 'PAY_IN' => $amount,
-                'Memo' => config('perfectmoney.account_name') . " " . $payment_id,
+                'Memo' => $this->memo,
                 'PAYMENT_ID' => $payment_id
             ]
         ]);

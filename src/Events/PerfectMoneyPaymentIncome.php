@@ -1,6 +1,6 @@
 <?php
 
-namespace Selfreliance\PerfectMoney\Events;
+namespace Oasin\PerfectMoney\Events;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Queue\SerializesModels;

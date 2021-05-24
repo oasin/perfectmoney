@@ -1,6 +1,6 @@
 <?php
 
-namespace Selfreliance\PerfectMoney;
+namespace Oasin\PerfectMoney;
 use Illuminate\Support\ServiceProvider;
 
 class PerfectMoneyServiceProvider extends ServiceProvider
@@ -14,7 +14,8 @@ class PerfectMoneyServiceProvider extends ServiceProvider
     {
         //
         include __DIR__ . '/routes.php';
-        $this->app->make('Selfreliance\PerfectMoney\PerfectMoney');
+        
+        $this->app->make('Oasin\PerfectMoney\PerfectMoney');
 
         $this->publishes([
             __DIR__.'/config/perfectmoney.php' => config_path('perfectmoney.php'),

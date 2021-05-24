@@ -1,9 +1,9 @@
 <?php 
-namespace Selfreliance\PerfectMoney\Facades;  
+namespace Oasin\PerfectMoney\Facades;  
 
 use Illuminate\Support\Facades\Facade;  
 
-use Selfreliance\PerfectMoney\PerfectMoney as PerfectMoneyClass;
+use Oasin\PerfectMoney\PerfectMoney as PerfectMoneyClass;
 
 class PerfectMoney extends Facade 
 {

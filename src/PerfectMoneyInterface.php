@@ -1,15 +1,31 @@
 <?php
-namespace Selfreliance\PerfectMoney;
+
+namespace Oasin\PerfectMoney;
 
 use Illuminate\Http\Request;
 
-interface PerfectMoneyInterface {
+interface PerfectMoneyInterface
+{
 
-    public function setAccountID($value);
+	public function setAccountID($value);
 
-    public function getAccountID();
+	public function getAccountID();
 
-    /**
+	public function setAccountName($value);
+
+	public function getAccountname();
+
+	public function getPassphrase();
+
+	public function setPassphrase($value);
+
+	public function getPassword();
+
+	public function setPassword($value);
+
+	public function memo($memo);
+
+	/**
 	 * Get balance
 	 * @param  string $unit Currency to get balance
 	 * @return float       real balance
@@ -53,8 +69,7 @@ interface PerfectMoneyInterface {
 	 */
 	public function cancel_payment(Request $request);
 
-	public function setParameter(string $key, $value = null);
+	public function setParameter($key, $value = null);
 
-    public function getParameter($key);
-
+	public function getParameter($key);
 }
